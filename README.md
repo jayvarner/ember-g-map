@@ -405,6 +405,19 @@ actions: {
   }
 }
 ```
+## Geolocation
+
+Plot the user's current location using [Navigator.geolocation](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/geolocation). This component extentds (#map-with-marker)[GMapMarker]. All options are the same except the cordinates are set to what the brower reports as its location.
+
+```handlebars
+{{#g-map markersFitMode="live"2 as |context|}}
+  {{#g-map-geolocation context as |geolocationContext|}}
+    {{#g-map-infowindow geolocationContext}}
+      <h1>My browser thinks I'm here!</h1>
+    {{/g-map-infowindow}}
+  {{/g-map-geolocation}}
+{{/g-map}}
+```
 
 ## Demo
 

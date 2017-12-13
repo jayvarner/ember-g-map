@@ -2,6 +2,7 @@ import Ember from 'ember';
 import layout from '../templates/components/g-map-infowindow';
 import GMapComponent from './g-map';
 import GMapMarkerComponent from './g-map-marker';
+import GMapGeolocationComponent from './g-map-geolocation';
 import compact from '../utils/compact';
 
 const { isEmpty, isPresent, observer, computed, run, assert, typeOf } = Ember;
@@ -25,10 +26,13 @@ const GMapInfowindowComponent = Ember.Component.extend({
     const mapContext = this.get('mapContext');
     const hasMap = mapContext instanceof GMapComponent;
     const hasMarker = mapContext instanceof GMapMarkerComponent;
+    const hasGeolocation = mapContext instanceof GMapGeolocationComponent;
     assert('Must be inside {{#g-map}} or {{#g-map-marker}} components with context set',
-      hasMarker || hasMap);
+      hasMarker || hasMap || hasGeolocation);
 
-    this.set('hasMarker', hasMarker);
+    if (hasMarker || hasGeolocation) {
+      this.set('hasMarker', true);
+    }
   },
 
   didInsertElement() {

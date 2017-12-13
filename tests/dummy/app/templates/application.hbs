@@ -78,4 +78,10 @@
   {{g-map-address-route context
                 originAddress="Las Vegas, Nevada"
                 destinationAddress="Sacramento, California"}}
+
+  {{#g-map-geolocation context as |geolocationContext|}}
+    {{#g-map-infowindow geolocationContext}}
+      <h1>My browser thinks I'm here!</h1>
+    {{/g-map-infowindow}}
+  {{/g-map-geolocation}}
 {{/g-map}}
