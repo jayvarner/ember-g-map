@@ -1,19 +1,22 @@
-import Ember from 'ember';
+import { A } from '@ember/array';
+import Component from '@ember/component';
+import { isPresent, isEmpty } from '@ember/utils';
+import { observer, computed, get, set } from '@ember/object';
+import { run } from '@ember/runloop';
 import layout from '../templates/components/g-map';
+/* global google */
 
-const { isEmpty, isPresent, computed, observer, run } = Ember;
-
-export default Ember.Component.extend({
+export default Component.extend({
   layout,
   classNames: ['g-map'],
-  bannedOptions: Ember.A(['center', 'zoom']),
+  bannedOptions: A(['center', 'zoom']),
 
   init() {
     this._super(...arguments);
-    this.set('markers', Ember.A());
-    this.set('polylines', Ember.A());
-    if (isEmpty(this.get('options'))) {
-      this.set('options', {});
+    set(this, 'markers', A());
+    set(this, 'polylines', A());
+    if (isEmpty(get(this, 'options'))) {
+      set(this, 'options', {});
     }
   },
 
@@ -30,11 +33,11 @@ export default Ember.Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    if (isEmpty(this.get('map'))
+    if (isEmpty(get(this, 'gMap.map'))
       && (typeof FastBoot === 'undefined')) {
       const canvas = this.$().find('.g-map-canvas').get(0);
       const options = this.get('permittedOptions');
-      this.set('map', new google.maps.Map(canvas, options));
+      get(this, 'gMap').setUpMap(canvas, options);
     }
     this.setZoom();
     this.setCenter();
@@ -48,8 +51,8 @@ export default Ember.Component.extend({
   }),
 
   setOptions() {
-    const map = this.get('map');
-    const options = this.get('permittedOptions');
+    const map = get(this, 'gMap.map');
+    const options = get(this, 'permittedOptions');
     if (isPresent(map)) {
       map.setOptions(options);
     }
@@ -60,8 +63,8 @@ export default Ember.Component.extend({
   }),
 
   setZoom() {
-    const map = this.get('map');
-    const zoom = this.get('zoom');
+    const map = get(this, 'gMap.map');
+    const zoom = get(this, 'gMap.zoom');
     if (isPresent(map)) {
       map.setZoom(zoom);
     }
@@ -72,9 +75,9 @@ export default Ember.Component.extend({
   }),
 
   setCenter() {
-    const map = this.get('map');
-    const lat = this.get('lat');
-    const lng = this.get('lng');
+    const map = get(this, 'gMap.map');
+    const lat = get(this, 'gMap.lat');
+    const lng = get(this, 'gMap.lng');
 
     if (isPresent(map)
       && isPresent(lat)
@@ -86,34 +89,34 @@ export default Ember.Component.extend({
   },
 
   registerMarker(marker) {
-    this.get('markers').addObject(marker);
+    get(this, 'markers').addObject(marker);
   },
 
   unregisterMarker(marker) {
-    this.get('markers').removeObject(marker);
+    get(this, 'markers').removeObject(marker);
   },
 
   registerPolyline(polyline) {
-    this.get('polylines').addObject(polyline);
+    get(this, 'polylines').addObject(polyline);
   },
 
   unregisterPolyline(polyline) {
-    this.get('polylines').removeObject(polyline);
+    get(this, 'polylines').removeObject(polyline);
   },
 
   shouldFit: computed('markersFitMode', function() {
-    return Ember.A(['init', 'live']).includes(this.get('markersFitMode'));
+    return A(['init', 'live']).includes(get(this, 'markersFitMode'));
   }),
 
   markersChanged: observer('markers.@each.lat', 'markers.@each.lng', function() {
-    if (this.get('markersFitMode') === 'live') {
+    if (get(this, 'markersFitMode') === 'live') {
       run.once(this, 'fitToMarkers');
     }
   }),
 
   fitToMarkers() {
-    const markers = this.get('markers').filter((marker) => {
-      return isPresent(marker.get('lat')) && isPresent(marker.get('lng'));
+    const markers = get(this, 'markers').filter((marker) => {
+      return isPresent(get(marker, 'lat')) && isPresent(get(marker, 'lng'));
     });
 
     if (markers.length === 0
@@ -121,21 +124,21 @@ export default Ember.Component.extend({
       return;
     }
 
-    const map = this.get('map');
+    const map = get(this, 'gMap.map');
     const bounds = new google.maps.LatLngBounds();
 
     markers.forEach((marker) => {
-      if (isPresent(marker.get('viewport'))) {
-        bounds.union(marker.get('viewport'));
+      if (isPresent(get(marker, 'viewport'))) {
+        bounds.union(get(marker, 'viewport'));
       } else {
-        bounds.extend(new google.maps.LatLng(marker.get('lat'), marker.get('lng')));
+        bounds.extend(new google.maps.LatLng(get(marker, 'lat'), get(marker, 'lng')));
       }
     });
     map.fitBounds(bounds);
   },
 
   groupMarkerClicked(marker, group) {
-    let markers = this.get('markers').without(marker).filterBy('group', group);
+    let markers = get(this, 'markers').without(marker).filterBy('group', group);
     markers.forEach((marker) => marker.closeInfowindow());
   }
 });

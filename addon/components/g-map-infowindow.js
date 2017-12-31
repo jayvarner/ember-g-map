@@ -1,45 +1,50 @@
-import Ember from 'ember';
+import { get, set } from '@ember/object';
+import { alias } from '@ember/object/computed';
+import Component from '@ember/component';
+import { A } from '@ember/array';
+import { observer } from '@ember/object';
+import { run } from '@ember/runloop';
+import { assert } from '@ember/debug';
+import { typeOf, isPresent, isEmpty } from '@ember/utils';
+import { inject as service } from '@ember/service';
 import layout from '../templates/components/g-map-infowindow';
 import GMapComponent from './g-map';
 import GMapMarkerComponent from './g-map-marker';
-import GMapGeolocationComponent from './g-map-geolocation';
 import compact from '../utils/compact';
 
-const { isEmpty, isPresent, observer, computed, run, assert, typeOf } = Ember;
+const allowedOptions = A(['disableAutoPan', 'maxWidth', 'pixelOffset']);
 
-const allowedOptions = Ember.A(['disableAutoPan', 'maxWidth', 'pixelOffset']);
-
-const OPEN_CLOSE_EVENTS = Ember.A(
+const OPEN_CLOSE_EVENTS = A(
   ['click', 'dblclick', 'rightclick', 'mouseover', 'mouseout']
 );
 
-const GMapInfowindowComponent = Ember.Component.extend({
+const GMapInfowindowComponent = Component.extend({
   layout,
   classNames: ['g-map-marker'],
+  gMap: service(),
 
-  map: computed.alias('mapContext.map'),
-  marker: computed.alias('mapContext.marker'),
+  map: alias('gMap.map'),
+  marker: alias('mapContext.marker'),
 
   init() {
     this._super(...arguments);
 
-    const mapContext = this.get('mapContext');
+    const mapContext = get(this, 'mapContext');
     const hasMap = mapContext instanceof GMapComponent;
     const hasMarker = mapContext instanceof GMapMarkerComponent;
-    const hasGeolocation = mapContext instanceof GMapGeolocationComponent;
     assert('Must be inside {{#g-map}} or {{#g-map-marker}} components with context set',
-      hasMarker || hasMap || hasGeolocation);
+      hasMarker || hasMap);
 
-    if (hasMarker || hasGeolocation) {
-      this.set('hasMarker', true);
+    if (hasMarker) {
+      set(this, 'hasMarker', true);
     }
   },
 
   didInsertElement() {
     this._super(...arguments);
-    if (isEmpty(this.get('infowindow'))) {
+    if (isEmpty(get(this, 'infowindow'))) {
       const infowindow = this.buildInfowindow();
-      this.set('infowindow', infowindow);
+      set(this, 'infowindow', infowindow);
     }
     this.setPosition();
     this.setMap();
@@ -50,8 +55,8 @@ const GMapInfowindowComponent = Ember.Component.extend({
   willDestroyElement() {
     this.close();
 
-    if (this.get('hasMarker')) {
-      this.get('mapContext').unregisterInfowindow();
+    if (get(this, 'hasMarker')) {
+      get(this, 'mapContext').unregisterInfowindow();
     }
   },
 
@@ -60,7 +65,7 @@ const GMapInfowindowComponent = Ember.Component.extend({
   }),
 
   setOptions() {
-    const infowindow = this.get('infowindow');
+    const infowindow = get(this, 'infowindow');
     const options = compact(this.getProperties(allowedOptions));
 
     if (isPresent(infowindow) && isPresent(Object.keys(options))) {
@@ -71,14 +76,14 @@ const GMapInfowindowComponent = Ember.Component.extend({
   buildInfowindow() {
     if (google) {
       const infowindow = new google.maps.InfoWindow({
-        content: this.get('element')
+        content: get(this, 'element')
       });
 
-      if (isPresent(this.get('attrs.onOpen'))) {
+      if (isPresent(get(this, 'attrs.onOpen'))) {
         infowindow.addListener('domready', () => this.handleOpenClickEvent());
       }
 
-      if (isPresent(this.get('attrs.onClose'))) {
+      if (isPresent(get(this, 'attrs.onClose'))) {
         infowindow.addListener('closeclick', () => this.handleCloseClickEvent());
       }
       return infowindow;
@@ -104,11 +109,11 @@ const GMapInfowindowComponent = Ember.Component.extend({
   },
 
   open() {
-    const infowindow = this.get('infowindow');
-    const map = this.get('map');
-    const marker = this.get('marker');
+    const infowindow = get(this, 'infowindow');
+    const map = get(this, 'map');
+    const marker = get(this, 'marker');
 
-    this.set('isOpen', true);
+    set(this, 'isOpen', true);
     if (isPresent(map) && isPresent(marker)) {
       infowindow.open(map, marker);
     } else if (isPresent(map)) {
@@ -117,9 +122,9 @@ const GMapInfowindowComponent = Ember.Component.extend({
   },
 
   close() {
-    const infowindow = this.get('infowindow');
+    const infowindow = get(this, 'infowindow');
     if (isPresent(infowindow)) {
-      this.set('isOpen', false);
+      set(this, 'isOpen', false);
       infowindow.close();
     }
   },
@@ -129,7 +134,7 @@ const GMapInfowindowComponent = Ember.Component.extend({
   }),
 
   setMap() {
-    if (this.get('hasMarker') === false) {
+    if (get(this, 'hasMarker') === false) {
       this.open();
     }
   },
@@ -139,10 +144,10 @@ const GMapInfowindowComponent = Ember.Component.extend({
   }),
 
   setMarker() {
-    const map = this.get('map');
-    const marker = this.get('marker');
-    const context = this.get('mapContext');
-    const infowindow = this.get('infowindow');
+    const map = get(this, 'map');
+    const marker = get(this, 'marker');
+    const context = get(this, 'mapContext');
+    const infowindow = get(this, 'infowindow');
 
     if (isPresent(infowindow) && isPresent(map) && isPresent(marker)) {
       const openEvent = this.retrieveOpenEvent();
@@ -156,9 +161,9 @@ const GMapInfowindowComponent = Ember.Component.extend({
   }),
 
   setPosition() {
-    const infowindow = this.get('infowindow');
-    const lat = this.get('lat');
-    const lng = this.get('lng');
+    const infowindow = get(this, 'infowindow');
+    const lat = get(this, 'lat');
+    const lng = get(this, 'lng');
 
     if (isPresent(infowindow)
       && isPresent(lat)
@@ -170,12 +175,12 @@ const GMapInfowindowComponent = Ember.Component.extend({
   },
 
   retrieveOpenEvent() {
-    const openEvent = this.get('openOn');
+    const openEvent = get(this, 'openOn');
     return OPEN_CLOSE_EVENTS.includes(openEvent) ? openEvent : 'click';
   },
 
   retrieveCloseEvent() {
-    const closeEvent = this.get('closeOn');
+    const closeEvent = get(this, 'closeOn');
     return OPEN_CLOSE_EVENTS.includes(closeEvent) ? closeEvent : null;
   }
 });
