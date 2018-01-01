@@ -1,23 +1,26 @@
-import Ember from 'ember';
+import Component from '@ember/component';
+import { get, observer, set } from '@ember/object';
+import { alias } from '@ember/object/computed';
+import { run } from '@ember/runloop';
+import { assert } from '@ember/debug';
+import { typeOf, isPresent, isEmpty } from '@ember/utils';
 import layout from '../templates/components/g-map-marker';
 import GMapComponent from './g-map';
 
-const { isEmpty, isPresent, observer, computed, run, assert, typeOf } = Ember;
-
-const GMapMarkerComponent = Ember.Component.extend({
+const GMapMarkerComponent = Component.extend({
   layout,
   classNames: ['g-map-marker'],
 
-  map: computed.alias('mapContext.map'),
+  map: alias('gMap.map'),
 
   init() {
     this._super(...arguments);
     this.infowindow = null;
-    if (isEmpty(this.get('group'))) {
-      this.set('group', null);
+    if (isEmpty(get(this, 'group'))) {
+      set(this, 'group', null);
     }
 
-    const mapContext = this.get('mapContext');
+    const mapContext = get(this, 'mapContext');
     assert('Must be inside {{#g-map}} component with context set', mapContext instanceof GMapComponent);
 
     mapContext.registerMarker(this);
@@ -25,11 +28,12 @@ const GMapMarkerComponent = Ember.Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    if (isEmpty(this.get('marker'))
+    if (isEmpty(get(this, 'marker'))
       && (typeof FastBoot === 'undefined')) {
       const marker = new google.maps.Marker();
-      this.set('marker', marker);
+      set(this, 'marker', marker);
     }
+    // set(this, 'map', get(this, 'gMap.map'));
     this.setPosition();
     this.setZIndex();
     this.setIcon();
@@ -43,20 +47,20 @@ const GMapMarkerComponent = Ember.Component.extend({
 
   willDestroyElement() {
     this.unsetMarkerFromMap();
-    this.get('mapContext').unregisterMarker(this);
+    get(this, 'gMap.map').unregisterMarker(this);
   },
 
   registerInfowindow(infowindow, openEvent, closeEvent) {
-    this.set('infowindow', infowindow);
+    set(this, 'infowindow', infowindow);
     this.attachOpenCloseEvents(infowindow, openEvent, closeEvent);
   },
 
   unregisterInfowindow() {
-    this.set('infowindow', null);
+    set(this, 'infowindow', null);
   },
 
   attachOpenCloseEvents(infowindow, openEvent, closeEvent) {
-    const marker = this.get('marker');
+    const marker = get(this, 'marker');
     if (openEvent === closeEvent) {
       this.attachTogglingInfowindowEvent(marker, infowindow, openEvent);
     } else {
@@ -90,7 +94,7 @@ const GMapMarkerComponent = Ember.Component.extend({
   },
 
   unsetMarkerFromMap() {
-    const marker = this.get('marker');
+    const marker = get(this, 'marker');
     if (isPresent(marker)) {
       marker.setMap(null);
     }
@@ -101,8 +105,8 @@ const GMapMarkerComponent = Ember.Component.extend({
   }),
 
   setMap() {
-    const map = this.get('map');
-    const marker = this.get('marker');
+    const map = get(this, 'gMap.map');
+    const marker = get(this, 'marker');
 
     if (isPresent(marker) && isPresent(map)) {
       marker.setMap(map);
@@ -114,9 +118,9 @@ const GMapMarkerComponent = Ember.Component.extend({
   }),
 
   setPosition() {
-    const marker = this.get('marker');
-    const lat = this.get('lat');
-    const lng = this.get('lng');
+    const marker = get(this, 'marker');
+    const lat = get(this, 'lat');
+    const lng = get(this, 'lng');
 
     if (isPresent(marker)
       && isPresent(lat)
@@ -134,8 +138,8 @@ const GMapMarkerComponent = Ember.Component.extend({
   }),
 
   setIcon() {
-    const marker = this.get('marker');
-    const icon = this.get('icon');
+    const marker = get(this, 'marker');
+    const icon = get(this, 'icon');
 
     if (isPresent(marker) && isPresent(icon)) {
       marker.setIcon(icon);
@@ -147,8 +151,8 @@ const GMapMarkerComponent = Ember.Component.extend({
   }),
 
   setZIndex() {
-    const marker = this.get('marker');
-    const zIndex = this.get('zIndex');
+    const marker = get(this, 'marker');
+    const zIndex = get(this, 'zIndex');
     if (isPresent(marker) && isPresent(zIndex)) {
       marker.setZIndex(zIndex);
     }
@@ -159,22 +163,22 @@ const GMapMarkerComponent = Ember.Component.extend({
   }),
 
   setDraggable() {
-    const marker = this.get('marker');
-    const draggable = this.get('draggable');
+    const marker = get(this, 'marker');
+    const draggable = get(this, 'draggable');
     if (isPresent(marker) && isPresent(draggable)) {
       marker.setDraggable(draggable);
     }
   },
 
   setOnClick() {
-    const marker = this.get('marker');
+    const marker = get(this, 'marker');
     if (isPresent(marker)) {
       marker.addListener('click', () => this.sendOnClick());
     }
   },
 
   setOnDrag() {
-    const marker = this.get('marker');
+    const marker = get(this, 'marker');
     marker.addListener('dragend', (event) => {
       const lat = event.latLng.lat();
       const lng = event.latLng.lng();
@@ -191,8 +195,8 @@ const GMapMarkerComponent = Ember.Component.extend({
   }),
 
   setLabel() {
-    const marker = this.get('marker');
-    const label = this.get('label');
+    const marker = get(this, 'marker');
+    const label = get(this, 'label');
 
     if (isPresent(marker) && isPresent(label)) {
       marker.setLabel(label);
@@ -204,8 +208,8 @@ const GMapMarkerComponent = Ember.Component.extend({
   }),
 
   setTitle() {
-    const marker = this.get('marker');
-    const title = this.get('title');
+    const marker = get(this, 'marker');
+    const title = get(this, 'title');
 
     if (isPresent(marker) && isPresent(title)) {
       marker.setTitle(title);
@@ -214,9 +218,8 @@ const GMapMarkerComponent = Ember.Component.extend({
 
   sendOnClick() {
     const { onClick } = this.attrs;
-    const mapContext = this.get('mapContext');
-    const group = this.get('group');
-
+    const mapContext = get(this, 'gMap.map');
+    const group = get(this, 'group');
     if (typeOf(onClick) === 'function') {
       onClick();
     } else {
@@ -239,7 +242,7 @@ const GMapMarkerComponent = Ember.Component.extend({
   },
 
   closeInfowindow() {
-    const infowindow = this.get('infowindow');
+    const infowindow = get(this, 'infowindow');
     if (isPresent(infowindow)) {
       infowindow.close();
     }

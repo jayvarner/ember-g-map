@@ -15,6 +15,9 @@
     <button {{action "togglePolylineCoords"}}> Toggle polyline coords </button>
   </p>
 </form>
+<p>
+  <strong>Client Location Error:</strong> {{gMap.clientPosition.error}}
+</p>
 
 {{#g-map markersFitMode="live" options=customOptions as |context|}}
 
@@ -78,4 +81,10 @@
   {{g-map-address-route context
                 originAddress="Las Vegas, Nevada"
                 destinationAddress="Sacramento, California"}}
+
+  {{#g-map-marker context lat=gMap.clientPosition.lat lng=gMap.clientPosition.lng as |geolocationContext|}}
+    {{#g-map-infowindow geolocationContext}}
+      <h1>My browser thinks I'm here!</h1>
+    {{/g-map-infowindow}}
+  {{/g-map-marker}}
 {{/g-map}}
