@@ -86,6 +86,13 @@ module.exports = {
       npm: {
         devDependencies: {}
       }
-    }
+    },
+    {
+      name: 'fastboot-addon-tests',
+      command: 'DEBUG=ember-cli-addon-tests ember fastboot:test',
+      npm: {
+        devDependencies: {}
+      }
+    },
   ]
 };

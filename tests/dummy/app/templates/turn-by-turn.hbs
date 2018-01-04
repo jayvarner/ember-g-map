@@ -1,0 +1,12 @@
+{{!-- <table>
+{{#each gMap.turnByTurn.steps as |step|}}
+  <tr>
+    <td>
+      <div jstcache="30" class="adp-ramp-right adp-maneuver" jsan="7.adp-ramp-right,7.adp-maneuver"></div>
+      {{step.maneuver}}</td>
+    <td>{{{step.instructions}}}</td>
+    <td>{{step.distance.text}}</td>
+  </tr>
+{{/each}}
+</table> --}}
+{{gMap.directionsPanel}}

@@ -23,6 +23,11 @@ module.exports = function(environment) {
     }
   };
 
+  ENV['g-map'] = {
+    key: 'AIzaSyD-G_lDtvChv-P3nchtQYHoCLfFzn9ylr8',
+    libraries: ['places']
+  };
+
   ENV.contentSecurityPolicy = {
     'default-src': "'none'",
     'script-src': "'self' 'unsafe-eval' *.googleapis.com maps.gstatic.com",
@@ -38,10 +43,7 @@ module.exports = function(environment) {
     // ENV.APP.LOG_TRANSITIONS = true;
     // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
-    ENV['g-map'] = {
-      key: 'AIzaSyD-G_lDtvChv-P3nchtQYHoCLfFzn9ylr8',
-      libraries: ['places']
-    };
+
   }
 
   if (environment === 'test') {

@@ -1,0 +1,17 @@
+{{g-map-select-travel-mode default=gMap.travelMode}}
+{{#g-map markersFitMode="live" as |context|}}
+
+  {{#if gMap.clientPosition}}
+    {{g-map-route
+      context
+      travelMode=gMap.travelMode
+      strokeColor='blue'
+      originLat=gMap.clientPosition.lat
+      originLng=gMap.clientPosition.lng
+      destinationLat=33.763617
+      destinationLng=-84.351338
+    }}
+  {{/if}}
+{{/g-map}}
+{{#link-to 'turn-by-turn'}}Turn by turn{{/link-to}}
+<div id='directionsPanel' />

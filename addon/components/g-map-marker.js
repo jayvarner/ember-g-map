@@ -6,12 +6,13 @@ import { assert } from '@ember/debug';
 import { typeOf, isPresent, isEmpty } from '@ember/utils';
 import layout from '../templates/components/g-map-marker';
 import GMapComponent from './g-map';
+/* global google */
 
 const GMapMarkerComponent = Component.extend({
   layout,
   classNames: ['g-map-marker'],
 
-  map: alias('gMap.map'),
+  // map: alias('gMap.map'),
 
   init() {
     this._super(...arguments);
@@ -23,7 +24,7 @@ const GMapMarkerComponent = Component.extend({
     const mapContext = get(this, 'mapContext');
     assert('Must be inside {{#g-map}} component with context set', mapContext instanceof GMapComponent);
 
-    mapContext.registerMarker(this);
+    // mapContext.registerMarker(this);
   },
 
   didInsertElement() {
@@ -45,10 +46,10 @@ const GMapMarkerComponent = Component.extend({
     this.setOnDrag();
   },
 
-  willDestroyElement() {
-    this.unsetMarkerFromMap();
-    get(this, 'gMap.map').unregisterMarker(this);
-  },
+  // willDestroyElement() {
+  //   this.unsetMarkerFromMap();
+  //   get(this, 'gMap').unregisterMarker(this);
+  // },
 
   registerInfowindow(infowindow, openEvent, closeEvent) {
     set(this, 'infowindow', infowindow);
@@ -129,6 +130,8 @@ const GMapMarkerComponent = Component.extend({
       const position = new google.maps.LatLng(lat, lng);
       if (isPresent(position)) {
         marker.setPosition(position);
+        get(this, 'gMap').registerFeature(marker);
+
       }
     }
   },
@@ -200,6 +203,7 @@ const GMapMarkerComponent = Component.extend({
 
     if (isPresent(marker) && isPresent(label)) {
       marker.setLabel(label);
+      console.log(marker)
     }
   },
 

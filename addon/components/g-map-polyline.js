@@ -1,13 +1,14 @@
 import { alias } from '@ember/object/computed';
 import Component from '@ember/component';
 import { A } from '@ember/array';
-import { observer } from '@ember/object';
+import { get, observer } from '@ember/object';
 import { run } from '@ember/runloop';
 import { assert } from '@ember/debug';
 import { typeOf, isPresent, isEmpty } from '@ember/utils';
 import layout from '../templates/components/g-map-polyline';
 import GMapComponent from './g-map';
 import compact from '../utils/compact';
+/* global google */
 
 const allowedPolylineOptions = A(['strokeColor', 'strokeWeight', 'strokeOpacity', 'zIndex', 'geodesic', 'icons', 'clickable', 'draggable', 'visible', 'path']);
 
@@ -28,7 +29,7 @@ const GMapPolylineComponent = Component.extend({
     const mapContext = this.get('mapContext');
     assert('Must be inside {{#g-map}} component with context set', mapContext instanceof GMapComponent);
 
-    mapContext.registerPolyline(this);
+    // mapContext.registerPolyline(this);
   },
 
   didInsertElement() {
@@ -37,6 +38,7 @@ const GMapPolylineComponent = Component.extend({
       const options = compact(this.getProperties(allowedPolylineOptions));
       const polyline = new google.maps.Polyline(options);
       this.set('polyline', polyline);
+      get(this, 'gMap').registerFeature(polyline);
     }
     this.setMap();
     this.setPath();
@@ -46,8 +48,8 @@ const GMapPolylineComponent = Component.extend({
   },
 
   willDestroyElement() {
-    this.unsetPolylineFromMap();
-    this.get('mapContext').unregisterPolyline(this);
+    // this.unsetPolylineFromMap();
+    // this.get('mapContext').unregisterPolyline(this);
   },
 
   registerCoordinate(coordinate) {

@@ -7,6 +7,9 @@ const Router = EmberRouter.extend({
 });
 
 Router.map(function() {
+  this.route('index', { path: '/' });
+  this.route('directions');
+  this.route('turn-by-turn');
 });
 
 export default Router;

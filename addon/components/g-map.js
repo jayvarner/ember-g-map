@@ -13,8 +13,7 @@ export default Component.extend({
 
   init() {
     this._super(...arguments);
-    set(this, 'markers', A());
-    set(this, 'polylines', A());
+
     if (isEmpty(get(this, 'options'))) {
       set(this, 'options', {});
     }
@@ -37,13 +36,28 @@ export default Component.extend({
       && (typeof FastBoot === 'undefined')) {
       const canvas = this.$().find('.g-map-canvas').get(0);
       const options = this.get('permittedOptions');
-      get(this, 'gMap').setUpMap(canvas, options);
+      this.setUpMap(canvas, options);
     }
     this.setZoom();
     this.setCenter();
-    if (this.get('shouldFit')) {
-      this.fitToMarkers();
+    if (get(this, 'shouldFit')) {
+      // this.fitToMarkers();
+      set(this, 'gMap.shouldFit', true);
     }
+  },
+
+  willDestroy() {
+    if (isPresent(get(this, 'gMap.map'))) {
+      get(this, 'gMap').tearDownMap();
+    }
+  },
+
+  setUpMap(canvas, options) {
+    let map = new google.maps.Map(canvas, options)
+    set(this, 'gMap.map', map);
+    map.addListener('bounds_changed', function() {
+      console.log('shit changed')
+    });
   },
 
   permittedOptionsChanged: observer('permittedOptions', function() {
@@ -89,33 +103,36 @@ export default Component.extend({
   },
 
   registerMarker(marker) {
-    get(this, 'markers').addObject(marker);
+    get(this, 'gMap.markers').addObject(marker);
   },
 
+
+
   unregisterMarker(marker) {
-    get(this, 'markers').removeObject(marker);
+    get(this, 'gMap.markers').removeObject(marker);
   },
 
   registerPolyline(polyline) {
-    get(this, 'polylines').addObject(polyline);
+    console.log(polyline)
+    get(this, 'gMap.polylines').addObject(polyline);
   },
 
   unregisterPolyline(polyline) {
-    get(this, 'polylines').removeObject(polyline);
+    get(this, 'gMap.polylines').removeObject(polyline);
   },
 
   shouldFit: computed('markersFitMode', function() {
     return A(['init', 'live']).includes(get(this, 'markersFitMode'));
   }),
 
-  markersChanged: observer('markers.@each.lat', 'markers.@each.lng', function() {
+  markersChanged: computed('gMap.markers.@each.lat', 'gMap.markers.@each.lng', function() {
     if (get(this, 'markersFitMode') === 'live') {
       run.once(this, 'fitToMarkers');
     }
   }),
 
   fitToMarkers() {
-    const markers = get(this, 'markers').filter((marker) => {
+    const markers = get(this, 'gMap.features').filter((marker) => {
       return isPresent(get(marker, 'lat')) && isPresent(get(marker, 'lng'));
     });
 
@@ -138,7 +155,7 @@ export default Component.extend({
   },
 
   groupMarkerClicked(marker, group) {
-    let markers = get(this, 'markers').without(marker).filterBy('group', group);
+    let markers = get(this, 'gMap.markers').without(marker).filterBy('group', group);
     markers.forEach((marker) => marker.closeInfowindow());
   }
 });

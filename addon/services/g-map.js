@@ -1,7 +1,9 @@
 import Service from '@ember/service';
+import { A } from '@ember/array';
 import { computed, get, set } from '@ember/object';
 import { isPresent } from '@ember/utils';
 import { debug } from '@ember/debug';
+import $ from 'jquery';
 /* global google */
 
 export default Service.extend({
@@ -9,6 +11,18 @@ export default Service.extend({
   clientLat: null,
   clientLng: null,
   clientPositionError: null,
+  features: A(),
+  turnByTurn: null,
+  travelMode: 'DRIVING',
+  shouldFit: false,
+
+  clientPosition: computed('clientLat', 'clientLng', 'clientPositionError', function() {
+    return {
+      lat: get(this, 'clientLat'),
+      lng: get(this, 'clientLng'),
+      error: get(this, 'clientPositionError')
+    };
+  }),
 
   init() {
     this._super(...arguments);
@@ -26,19 +40,68 @@ export default Service.extend({
     }
   },
 
-  setUpMap(canvas, options) {
-    let map = new google.maps.Map(canvas, options)
-    set(this, 'map', map);
-    map.addListener('bounds_changed', function() {
-      console.log('shit changed')
+
+
+  tearDownMap() {
+    let map = get(this, 'map');
+    get(this, 'features').forEach((feature) => {
+      feature.setMap(null);
     });
+    google.maps.event.clearInstanceListeners(map);
+    // set(this, 'map', new google.maps.Map($().find('.g-map-canvas').get(0)));
+    set(this, 'features', A());
+    set(this, 'turnByTurn', null);
   },
 
-  clientPosition: computed('clientLat', 'clientLng', 'clientPositionError', function() {
-    return {
-      lat: get(this, 'clientLat'),
-      lng: get(this, 'clientLng'),
-      error: get(this, 'clientPositionError')
-    };
-  })
+  registerFeature(feature) {
+    // console.log(feature)
+    get(this, 'features').addObject(feature);
+    if(get(this, 'shouldFit')) {
+      this.fitAll(feature);
+    }
+  },
+
+  fitAll(feature) {
+    console.log(feature)
+    const map = get(this, 'map');
+    const bounds = map.getBounds() !== null ? map.getBounds() : new google.maps.LatLngBounds();
+    if(feature.hasOwnProperty('position')) {
+      console.log(feature.position)
+      map.fitBounds(bounds.extend(feature.position));
+    } else if(feature.hasOwnProperty('latLngs')) {
+      feature.getPath().forEach((point) => {
+        console.log(point)
+        bounds.extend(point);
+      });
+    } else if(feature.hasOwnProperty('directions')) {
+      feature.directions.routes.forEach((route) => {
+        bounds.union(route.bounds);
+      });
+    } else {
+      return false;
+    }
+
+    map.fitBounds(bounds);
+  },
+
+  setTravelMode(mode) {
+    set(this, 'travelMode', mode.toUpperCase());
+  }
+
+  // registerMarker(marker) {
+  //   console.log(marker)
+  //   get(this, 'markers').addObject(marker);
+  // },
+
+  // unregisterMarker(marker) {
+  //   get(this, 'markers').removeObject(marker);
+  // },
+
+  // registerPolyline(polyline) {
+  //   get(this, 'polylines').addObject(polyline);
+  // },
+
+  // unregisterPolyline(polyline) {
+  //   get(this, 'polylines').removeObject(polyline);
+  // }
 });
