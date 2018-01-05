@@ -17,6 +17,9 @@ export default Service.extend({
   shouldFit: false,
 
   clientPosition: computed('clientLat', 'clientLng', 'clientPositionError', function() {
+    if (this.get('isFastBoot')) {
+      return;
+    }
     return {
       lat: get(this, 'clientLat'),
       lng: get(this, 'clientLng'),
@@ -26,6 +29,9 @@ export default Service.extend({
 
   init() {
     this._super(...arguments);
+    if (this.get('isFastBoot')) {
+      return;
+    }
     if (isPresent(navigator.geolocation) && (typeof FastBoot === 'undefined')) {
       navigator.geolocation.getCurrentPosition((location) => {
         set(this, 'clientLat', location.coords.latitude);
@@ -59,29 +65,6 @@ export default Service.extend({
     if(get(this, 'shouldFit')) {
       this.fitAll(feature);
     }
-  },
-
-  fitAll(feature) {
-    console.log(feature)
-    const map = get(this, 'map');
-    const bounds = map.getBounds() !== null ? map.getBounds() : new google.maps.LatLngBounds();
-    if(feature.hasOwnProperty('position')) {
-      console.log(feature.position)
-      map.fitBounds(bounds.extend(feature.position));
-    } else if(feature.hasOwnProperty('latLngs')) {
-      feature.getPath().forEach((point) => {
-        console.log(point)
-        bounds.extend(point);
-      });
-    } else if(feature.hasOwnProperty('directions')) {
-      feature.directions.routes.forEach((route) => {
-        bounds.union(route.bounds);
-      });
-    } else {
-      return false;
-    }
-
-    map.fitBounds(bounds);
   },
 
   setTravelMode(mode) {

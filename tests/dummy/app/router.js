@@ -10,6 +10,7 @@ Router.map(function() {
   this.route('index', { path: '/' });
   this.route('directions');
   this.route('turn-by-turn');
+  this.route('marker');
 });
 
 export default Router;
