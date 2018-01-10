@@ -1,29 +1,22 @@
+{{!-- BEGIN-SNIPPET marker --}}
 {{#g-map as |features|}}
-  {{features.marker position=(
+  {{#features.marker position=(
     hash
       lat=33.75432
       lng=-84.38979
-  )}}
+  ) as |marker|}}
+  {{/features.marker}}
 
-  {{features.marker position=(
+  {{#features.marker position=(
     hash
       lat=33.688383
       lng=-84.455888
-  )}}
+  ) as |marker|}}
+    {{#marker.infowindow}}
+      <p><i>One for the money, yes, sir, two for the show</i></p>
+      <p><i>A couple of years ago on Headland and Delowe</i></p>
+    {{/marker.infowindow}}
+  {{/features.marker}}
 {{/g-map}}
-
-<pre><code>
-{{!-- {{\#g-map as |features|}}
-  {{features.marker position=(
-    hash
-      lat=33.75432
-      lng=-84.38979
-  )}}
-
-  {{features.marker position=(
-    hash
-      lat=33.688383
-      lng=-84.455888
-  )}}
-{{/g-map}} --}}
-</code></pre>
+{{!-- END-SNIPPET --}}
+{{code-snippet name='marker.hbs'}}

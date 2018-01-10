@@ -1,8 +1,7 @@
 import { A } from '@ember/array';
 import GMapBase from 'ember-g-map/components/g-map-base';
-import { isPresent, isEmpty } from '@ember/utils';
-import { observer, computed, get, set } from '@ember/object';
-import { run } from '@ember/runloop';
+import { computed, get, set } from '@ember/object';
+import { inject as service } from '@ember/service';
 import { ParentMixin } from 'ember-composability-tools';
 import layout from '../templates/components/g-map';
 /* global google */
@@ -11,42 +10,39 @@ export default GMapBase.extend(ParentMixin, {
   layout,
   tagName: 'div',
   classNames: ['map-map'],
-  _bounds: new google.maps.LatLngBounds(),
+  bounds: null,
+  features: A(),
+  fastboot: service(),
+  isFastBoot: computed.reads('fastboot.isFastBoot'),
 
-  // didInsertParent() {
-  //   this._super(...arguments);
-  //   if (isEmpty(get(this, 'gMap.map'))
-  //     && (typeof FastBoot === 'undefined')) {
-  //     const canvas = this.$().find('.g-map-canvas').get(0);
-  //     const options = this.get('options');
-  //     this.setUpMap(canvas, options);
-  //   }
-  //   this.setZoom();
-  //   this.setCenter();
-  //   if (get(this, 'shouldFit')) {
-  //     // this.fitToMarkers();
-  //     set(this, 'gMap.shouldFit', true);
-  //   }
-  // },
+  init() {
+    this._super(...arguments);
+  },
 
-  createLayer() {
-    // return new google.maps.Map(this.element, get(this, 'options'));
+  createFeature() {
+    if (this.get('isFastBoot')) {
+      return;
+    }
+
     const options = get(this, 'options');
     const map = new google.maps.Map(this.element, options);
-
-    // set(this, 'map', map);
-    // if(isEmpty('options')) {
-    //   map.fitBounds(new google.maps.LatLngBounds({lat: -34, lng: 151}));
-    // }
-    // console.log('bounds', map)
+    set(this, 'bounds', new google.maps.LatLngBounds());
+    if (options === null) {
+      map.fitBounds(get(this, 'bounds'));
+    }
     return map;
   },
 
-  didCreateLayer() {
-    // console.log(this._feature);
+  didcreateFeature() {
+
   },
 
   willDestroy() {
+    if (this.get('isFastBoot')) {
+      return;
+    }
 
+    set(this, 'feature', new google.maps.Map(this.element, {}));
+    google.maps.event.clearInstanceListeners(this.element);
   }
 });

@@ -1,26 +1,33 @@
 import GMapBase from 'ember-g-map/components/g-map-base';
-import { get, observer, set } from '@ember/object';
-import { alias } from '@ember/object/computed';
-import { run } from '@ember/runloop';
-import { assert } from '@ember/debug';
-import { typeOf, isPresent, isEmpty } from '@ember/utils';
-import { ParentMixin } from 'ember-composability-tools';
+import { get, set } from '@ember/object';
+import { ParentMixin, ChildMixin } from 'ember-composability-tools';
+import layout from '../templates/components/g-map-overlayable';
 /* global google */
 
-export default GMapBase.extend(ParentMixin, {
-  createLayer() {
+export default GMapBase.extend(ParentMixin, ChildMixin, {
+  layout,
+  createFeature() {
+    if (this.get('isFastBoot')) {
+      return;
+    }
+
     return new google.maps.Marker({position: get(this, 'position')});
   },
 
-  didCreateLayer() {
-    // console.log('hello', this._feature);
+  didcreateFeature() {
+    //
   },
 
   addToContainer() {
-    const map = get(this, 'parentComponent')._feature;
-    const bounds = get(this, 'parentComponent')._bounds;
-    this._feature.setMap(map);
-    bounds.extend(this._feature.position)
+    if (this.get('isFastBoot')) {
+      return;
+    }
+
+    let map = get(this, 'parentComponent').feature;
+    set(this, 'map', map)
+    let bounds = get(this, 'parentComponent').bounds;
+    get(this, 'feature').setMap(map);
+    bounds.extend(get(this, 'feature.position'));
     map.fitBounds(bounds);
   }
 });

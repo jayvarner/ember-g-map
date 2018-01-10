@@ -1,0 +1,12 @@
+{{#if gMap.clientLat}}
+{{!-- BEGIN-SNIPPET location --}}
+{{#g-map as |features|}}
+  {{features.marker position=(
+    hash
+      lat=gMap.clientLat
+      lng=gMap.clientLng
+  )}}
+{{/g-map}}
+{{!-- END-SNIPPET --}}
+{{code-snippet name='location.hbs'}}
+{{/if}}

@@ -5,50 +5,21 @@ moduleForComponent('g-map-infowindow', 'Integration | Component | g map infowind
   integration: true
 });
 
-test('it renders inside {{g-map}} component', function(assert) {
-  assert.expect(2);
+test('it renders', function(assert) {
 
+  // Set any properties with this.set('myProperty', 'value');
+  // Handle any actions with this.on('myAction', function(val) { ... });
+
+  this.render(hbs`{{g-map-infowindow}}`);
+
+  assert.equal(this.$().text().trim(), '');
+
+  // Template block usage:
   this.render(hbs`
-    {{#g-map as |context|}}
-      {{g-map-infowindow context}}
-    {{/g-map}}
+    {{#g-map-infowindow}}
+      template block text
+    {{/g-map-infowindow}}
   `);
 
-  assert.ok(this.$());
-
-  this.render(hbs`
-    {{#g-map as |context|}}
-      {{#g-map-infowindow context}}
-        template block text
-      {{/g-map-infowindow}}
-    {{/g-map}}
-  `);
-
-  assert.ok(this.$());
-});
-
-test('it renders inside {{g-map-marker}} component', function(assert) {
-  assert.expect(2);
-
-  this.render(hbs`
-    {{#g-map as |context|}}
-      {{#g-map-marker context as |markerContext|}}
-        {{g-map-infowindow markerContext}}
-      {{/g-map-marker}}
-    {{/g-map}}
-  `);
-
-  assert.ok(this.$());
-
-  this.render(hbs`
-    {{#g-map as |context|}}
-      {{#g-map-marker context as |markerContext|}}
-        {{#g-map-infowindow markerContext}}
-          template block text
-        {{/g-map-infowindow}}
-      {{/g-map-marker}}
-    {{/g-map}}
-  `);
-
-  assert.ok(this.$());
+  assert.equal(this.$().text().trim(), 'template block text');
 });
