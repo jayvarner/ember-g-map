@@ -4,6 +4,7 @@ import { run } from '@ember/runloop';
 import { moduleForComponent } from 'ember-qunit';
 import test from 'ember-sinon-qunit/test-support/test';
 import sinon from 'sinon';
+/* global google */
 
 let fakeMapObject;
 

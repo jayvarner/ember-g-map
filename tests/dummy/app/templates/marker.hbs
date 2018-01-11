@@ -1,0 +1,184 @@
+<h1>Markers</h1>
+<article>
+  <p>
+    Options for the markers can be passed to the marker using the hash helper or setting properties from a component or controller.
+  </p>
+  <p>
+    Options currently implemented:
+    <ul>
+      <li><code>position</code></li>
+      <li><code>icon</code></li>
+      <li><code>animation</code></li>
+      <li><code>title</code></li>
+      <li><code>label</code></li>
+    </ul>
+  </p>
+</article>
+<h2>Single Marker</h2>
+<article>
+  <p>If you create a map with a marker(s) and no center and zoom defined, the map will center and zoom to include any and all features on the map.</p>
+</article>
+{{#uk-switcher animation='uk-animation-fade' as |switcher|}}
+  {{#switcher.nav type='tab' as |nav|}}
+    {{! nav.component is either a uk-tab or a uk-subnav component }}
+    {{#nav.component as |tab|}}
+      {{#tab.item}}Result{{/tab.item}}
+      {{#tab.item}}Javascript{{/tab.item}}
+      {{#tab.item}}Template{{/tab.item}}
+    {{/nav.component}}
+  {{/switcher.nav}}
+
+  {{#switcher.content as |content|}}
+    {{#content.item}}
+      {{!-- BEGIN-SNIPPET marker1 --}}
+        {{#g-map as |features|}}
+          {{#features.marker position=(
+            hash
+              lat=33.75432
+              lng=-84.38979
+            )
+            as |marker|}}
+        {{/features.marker}}
+
+      {{/g-map}}
+      {{!-- END-SNIPPET --}}
+    {{/content.item}}
+
+    {{#content.item}}
+      <h5>Content 2</h5>
+    {{/content.item}}
+
+    {{#content.item}}
+      {{code-snippet name='marker1.hbs'}}
+    {{/content.item}}
+  {{/switcher.content}}
+{{/uk-switcher}}
+
+
+<hr />
+
+<h2>Marker with Infowindow</h2>
+
+{{#uk-switcher animation='uk-animation-fade' as |switcher|}}
+  {{#switcher.nav type='tab' as |nav|}}
+    {{! nav.component is either a uk-tab or a uk-subnav component }}
+    {{#nav.component as |tab|}}
+      {{#tab.item}}Result{{/tab.item}}
+      {{#tab.item}}Javascript{{/tab.item}}
+      {{#tab.item}}Template{{/tab.item}}
+    {{/nav.component}}
+  {{/switcher.nav}}
+
+  {{#switcher.content as |content|}}
+    {{#content.item}}
+      {{!-- BEGIN-SNIPPET marker2 --}}
+  {{#g-map as |features|}}
+
+    {{#features.marker position=(
+      hash
+        lat=33.689247
+        lng=-84.457332
+      )
+      title='Headland and Delowe' as |marker|}}
+      {{#marker.infowindow}}
+        <p><i>One for the money, yes, sir, two for the show</i></p>
+        <p><i>A couple of years ago on Headland and Delowe</i></p>
+      {{/marker.infowindow}}
+    {{/features.marker}}
+  {{/g-map}}
+  {{!-- END-SNIPPET --}}
+    {{/content.item}}
+
+    {{#content.item}}
+      <h5>Content 2</h5>
+    {{/content.item}}
+
+    {{#content.item}}
+      {{code-snippet name='marker2.hbs'}}
+    {{/content.item}}
+  {{/switcher.content}}
+{{/uk-switcher}}
+
+<hr />
+
+<h2>Animation: Bounce Baby</h2>
+<article>
+  <p>
+    You can pass <code>DROP</code> or <code>BOUNCE</code>. <code>DROP</code> will drop the marker on the map once. <code>BOUNCE</code> continuously bounces the marker like below.
+  </p>
+</article>
+{{#uk-switcher animation='uk-animation-fade' as |switcher|}}
+  {{#switcher.nav type='tab' as |nav|}}
+    {{! nav.component is either a uk-tab or a uk-subnav component }}
+    {{#nav.component as |tab|}}
+      {{#tab.item}}Result{{/tab.item}}
+      {{#tab.item}}Javascript{{/tab.item}}
+      {{#tab.item}}Template{{/tab.item}}
+    {{/nav.component}}
+  {{/switcher.nav}}
+
+  {{#switcher.content as |content|}}
+    {{#content.item}}
+      {{!-- BEGIN-SNIPPET marker2 --}}
+  {{#g-map as |features|}}
+
+    {{#features.marker position=(
+      hash
+        lat=33.689247
+        lng=-84.457332
+      )
+      title='Headland and Delowe'
+      animation='BOUNCE' as |marker|}}
+      {{#marker.infowindow}}
+        <p><i>We're bouncing</i></p>
+      {{/marker.infowindow}}
+    {{/features.marker}}
+  {{/g-map}}
+  {{!-- END-SNIPPET --}}
+    {{/content.item}}
+
+    {{#content.item}}
+      <h5>Content 2</h5>
+    {{/content.item}}
+
+    {{#content.item}}
+      {{code-snippet name='marker2.hbs'}}
+    {{/content.item}}
+  {{/switcher.content}}
+{{/uk-switcher}}
+
+<hr />
+
+<h2>Options as Component/Controller Properties</h2>
+<article>
+  <p>Of course you can also set the options as properties on the component or controller.</p>
+</article>
+
+{{#uk-switcher animation='uk-animation-fade' as |switcher|}}
+  {{#switcher.nav type='tab' as |nav|}}
+    {{! nav.component is either a uk-tab or a uk-subnav component }}
+    {{#nav.component as |tab|}}
+      {{#tab.item}}Result{{/tab.item}}
+      {{#tab.item}}Javascript{{/tab.item}}
+      {{#tab.item}}Template{{/tab.item}}
+    {{/nav.component}}
+  {{/switcher.nav}}
+
+  {{#switcher.content as |content|}}
+    {{#content.item}}
+      {{!-- BEGIN-SNIPPET marker3 --}}
+      {{#g-map as |features|}}
+        {{features.marker lat=lat lng=lng label=label animation=animation icon=icon}}
+      {{/g-map}}
+      {{!-- END-SNIPPET --}}
+    {{/content.item}}
+
+    {{#content.item}}
+      {{code-snippet name='marker-in-controller'}}
+    {{/content.item}}
+
+    {{#content.item}}
+      {{code-snippet name='marker3.hbs'}}
+    {{/content.item}}
+  {{/switcher.content}}
+{{/uk-switcher}}

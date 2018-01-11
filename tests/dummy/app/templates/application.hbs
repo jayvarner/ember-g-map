@@ -1,21 +1,28 @@
-<div class='container'>
-  <div class='row'>
-    <div class='column column-25'>
-      <table>
-        <tr>
+<h1>Ember YAG-GMap</h1>
+<div uk-grid>
+  <div class='uk-width-1-5@m'>
+    <ul class='uk-nav'>
+        <li>
           {{#link-to 'index'}}
-          <td>Getting Started</td>
+              Getting Started
+            {{/link-to}}
+        </li>
+          {{#link-to 'marker'}}
+            Marker
           {{/link-to}}
-          </tr>
-        <tr>
-        {{#link-to 'directions'}}
-        <td>Directions</td>
-        {{/link-to}}
-        </tr>
-      </table>
-    </div>
-    <div class='column column-75'>
-      {{outlet}}
-    </div>
+        <li>
+          {{#link-to 'directions'}}
+            Directions
+          {{/link-to}}
+        </li>
+        <li>
+          {{#link-to 'client-location'}}
+            Client Location
+          {{/link-to}}
+        </li>
+    </ul>
+  </div>
+  <div class='uk-width-expand@m'>
+    {{outlet}}
   </div>
 </div>

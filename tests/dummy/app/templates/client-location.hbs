@@ -1,6 +1,6 @@
-
 {{#uk-switcher animation='uk-animation-fade' as |switcher|}}
   {{#switcher.nav type='tab' as |nav|}}
+    {{! nav.component is either a uk-tab or a uk-subnav component }}
     {{#nav.component as |tab|}}
       {{#tab.item}}Result{{/tab.item}}
       {{#tab.item}}Javascript{{/tab.item}}
@@ -10,35 +10,25 @@
 
   {{#switcher.content as |content|}}
     {{#content.item}}
-    Select Travel Moded: {{g-map-select-travel-mode travelMode=travelMode}}
     {{#if gMap.clientLat}}
-    {{!-- BEGIN-SNIPPET directions --}}
-    {{#g-map as |feature|}}
-      {{feature.directions
-        origin=(
-          hash
-            lat=gMap.clientLat
-            lng=gMap.clientLng
-        )
-        destination=(
-          hash
-            lat=33.75432
-            lng=-84.38979
-        )
-        travelMode=travelMode}}
+    {{!-- BEGIN-SNIPPET location --}}
+    {{#g-map as |features|}}
+      {{features.marker position=(
+        hash
+          lat=gMap.clientLat
+          lng=gMap.clientLng
+      )}}
     {{/g-map}}
-    {{! Div to hold the turn-by-turn directions}}
-    <div id='directions-panel' />
     {{!-- END-SNIPPET --}}
     {{/if}}
     {{/content.item}}
 
     {{#content.item}}
-      {{code-snippet name='directions-controller.js'}}
+      <h5>Content 2</h5>
     {{/content.item}}
 
     {{#content.item}}
-      {{code-snippet name='directions.hbs'}}
+      {{code-snippet name='location.hbs'}}
     {{/content.item}}
   {{/switcher.content}}
 {{/uk-switcher}}

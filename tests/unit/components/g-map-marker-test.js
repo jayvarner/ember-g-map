@@ -112,34 +112,34 @@ test('it unsets `infowindow` on `unregisterInfowindow`', function(assert) {
 
 test(`it calls 'attachTogglingInfowindowEvent' on 'attachOpenCloseEvents'
       if 'openEvent' and 'closeEvent' are equal`, function() {
-  component.attachTogglingInfowindowEvent = sinon.spy();
+    component.attachTogglingInfowindowEvent = sinon.spy();
 
-  const infowindowObject = { infowindowProperty: 'value' };
-  run(() => component.set('marker', fakeMarkerObject));
-  run(() => component.attachOpenCloseEvents(infowindowObject, 'event', 'event'));
+    const infowindowObject = { infowindowProperty: 'value' };
+    run(() => component.set('marker', fakeMarkerObject));
+    run(() => component.attachOpenCloseEvents(infowindowObject, 'event', 'event'));
 
-  sinon.assert.calledOnce(component.attachTogglingInfowindowEvent);
-  sinon.assert.calledWith(component.attachTogglingInfowindowEvent,
-    fakeMarkerObject, infowindowObject, 'event');
-});
+    sinon.assert.calledOnce(component.attachTogglingInfowindowEvent);
+    sinon.assert.calledWith(component.attachTogglingInfowindowEvent,
+      fakeMarkerObject, infowindowObject, 'event');
+  });
 
 test(`it calls 'attachOpenInfowindowEvent' and 'attachCloseInfowindowEvent' on 'attachOpenCloseEvents'
       if 'openEvent' and 'closeEvent' are not equal`, function() {
-  component.attachOpenInfowindowEvent = sinon.spy();
-  component.attachCloseInfowindowEvent = sinon.spy();
+    component.attachOpenInfowindowEvent = sinon.spy();
+    component.attachCloseInfowindowEvent = sinon.spy();
 
-  const infowindowObject = { infowindowProperty: 'value' };
-  run(() => component.set('marker', fakeMarkerObject));
-  run(() => component.attachOpenCloseEvents(infowindowObject, 'openEvent', 'closeEvent'));
+    const infowindowObject = { infowindowProperty: 'value' };
+    run(() => component.set('marker', fakeMarkerObject));
+    run(() => component.attachOpenCloseEvents(infowindowObject, 'openEvent', 'closeEvent'));
 
-  sinon.assert.calledOnce(component.attachOpenInfowindowEvent);
-  sinon.assert.calledWith(component.attachOpenInfowindowEvent,
-    fakeMarkerObject, infowindowObject, 'openEvent');
+    sinon.assert.calledOnce(component.attachOpenInfowindowEvent);
+    sinon.assert.calledWith(component.attachOpenInfowindowEvent,
+      fakeMarkerObject, infowindowObject, 'openEvent');
 
-  sinon.assert.calledOnce(component.attachCloseInfowindowEvent);
-  sinon.assert.calledWith(component.attachCloseInfowindowEvent,
-    fakeMarkerObject, infowindowObject, 'closeEvent');
-});
+    sinon.assert.calledOnce(component.attachCloseInfowindowEvent);
+    sinon.assert.calledWith(component.attachCloseInfowindowEvent,
+      fakeMarkerObject, infowindowObject, 'closeEvent');
+  });
 
 test('it calls `addListener` of google marker on `attachTogglingInfowindowEvent` with `event` present', function() {
   const infowindowObject = { infowindowProperty: 'value' };

@@ -1,260 +1,144 @@
-import Component from '@ember/component';
-import { get, observer, set } from '@ember/object';
-import { alias } from '@ember/object/computed';
-import { run } from '@ember/runloop';
+import GMapBase from 'ember-g-map/components/g-map-base';
+import { get, set } from '@ember/object';
 import { assert } from '@ember/debug';
 import { typeOf, isPresent, isEmpty } from '@ember/utils';
-import layout from '../templates/components/g-map-marker';
-import GMapComponent from './g-map';
+import { ParentMixin, ChildMixin } from 'ember-composability-tools';
+import layout from '../templates/components/g-map-overlayable';
 /* global google */
 
-const GMapMarkerComponent = Component.extend({
+export default GMapBase.extend(ParentMixin, ChildMixin, {
   layout,
-  classNames: ['g-map-marker'],
-
-  // map: alias('gMap.map'),
-
-  init() {
-    this._super(...arguments);
-    this.infowindow = null;
-    if (isEmpty(get(this, 'group'))) {
-      set(this, 'group', null);
+  createFeature() {
+    if (this.get('isFastBoot')) {
+      return;
     }
 
-    const mapContext = get(this, 'mapContext');
-    assert('Must be inside {{#g-map}} component with context set', mapContext instanceof GMapComponent);
-
-    // mapContext.registerMarker(this);
+    return new google.maps.Marker();
   },
 
-  didInsertElement() {
-    this._super(...arguments);
-    if (isEmpty(get(this, 'marker'))
-      && (typeof FastBoot === 'undefined')) {
-      const marker = new google.maps.Marker();
-      set(this, 'marker', marker);
+  didcreateFeature() {
+
+  },
+
+  addToContainer() {
+    if (this.get('isFastBoot')) {
+      return;
     }
-    // set(this, 'map', get(this, 'gMap.map'));
-    this.setPosition();
-    this.setZIndex();
-    this.setIcon();
-    this.setDraggable();
-    this.setLabel();
-    this.setTitle();
-    this.setMap();
-    this.setOnClick();
-    this.setOnDrag();
-  },
-
-  // willDestroyElement() {
-  //   this.unsetMarkerFromMap();
-  //   get(this, 'gMap').unregisterMarker(this);
-  // },
-
-  registerInfowindow(infowindow, openEvent, closeEvent) {
-    set(this, 'infowindow', infowindow);
-    this.attachOpenCloseEvents(infowindow, openEvent, closeEvent);
-  },
-
-  unregisterInfowindow() {
-    set(this, 'infowindow', null);
-  },
-
-  attachOpenCloseEvents(infowindow, openEvent, closeEvent) {
-    const marker = get(this, 'marker');
-    if (openEvent === closeEvent) {
-      this.attachTogglingInfowindowEvent(marker, infowindow, openEvent);
-    } else {
-      this.attachOpenInfowindowEvent(marker, infowindow, openEvent);
-      this.attachCloseInfowindowEvent(marker, infowindow, closeEvent);
+    if(isPresent(this.feature)) {
+      this.setPosition();
+      // this.setZIndex();
+      this.setIcon();
+      // this.setDraggable();
+      this.setLabel();
+      this.setTitle();
+      this.setAnimation();
+      // this.setOnClick();
+      // this.setOnDrag();
+      let map = get(this, 'parentComponent').feature;
+      set(this, 'map', map);
+      let bounds = get(this, 'parentComponent').bounds;
+      get(this, 'feature').setMap(map);
+      bounds.extend(get(this, 'feature.position'));
+      map.fitBounds(bounds);
     }
   },
 
-  attachOpenInfowindowEvent(marker, infowindow, event) {
-    if (isPresent(event)) {
-      marker.addListener(event, () => infowindow.open());
+  willDestroy() {
+    if (this.get('isFastBoot')) {
+      return;
     }
+
+    google.maps.event.clearInstanceListeners(get(this, 'feature'));
   },
-
-  attachCloseInfowindowEvent(marker, infowindow, event) {
-    if (isPresent(event)) {
-      marker.addListener(event, () => infowindow.close());
-    }
-  },
-
-  attachTogglingInfowindowEvent(marker, infowindow, event) {
-    if (isPresent(event)) {
-      marker.addListener(event, () => {
-        if (infowindow.get('isOpen')) {
-          infowindow.close();
-        } else {
-          infowindow.open();
-        }
-      });
-    }
-  },
-
-  unsetMarkerFromMap() {
-    const marker = get(this, 'marker');
-    if (isPresent(marker)) {
-      marker.setMap(null);
-    }
-  },
-
-  mapWasSet: observer('map', function() {
-    run.once(this, 'setMap');
-  }),
-
-  setMap() {
-    const map = get(this, 'gMap.map');
-    const marker = get(this, 'marker');
-
-    if (isPresent(marker) && isPresent(map)) {
-      marker.setMap(map);
-    }
-  },
-
-  coordsChanged: observer('lat', 'lng', function() {
-    run.once(this, 'setPosition');
-  }),
 
   setPosition() {
-    const marker = get(this, 'marker');
+    const marker = this.feature;
+    const latLng = get(this, 'position')
     const lat = get(this, 'lat');
     const lng = get(this, 'lng');
 
-    if (isPresent(marker)
-      && isPresent(lat)
-      && isPresent(lng)
-      && (typeof FastBoot === 'undefined')) {
-      const position = new google.maps.LatLng(lat, lng);
-      if (isPresent(position)) {
-        marker.setPosition(position);
-        get(this, 'gMap').registerFeature(marker);
+    const markerPosition = isPresent(latLng) ? latLng : new google.maps.LatLng(lat, lng);
 
-      }
+    if (isPresent(marker)
+      && isPresent(markerPosition)) {
+      marker.setPosition(markerPosition);
     }
   },
-
-  iconChanged: observer('icon', function() {
-    run.once(this, 'setIcon');
-  }),
 
   setIcon() {
-    const marker = get(this, 'marker');
-    const icon = get(this, 'icon');
+    const icon = this.get('icon');
 
-    if (isPresent(marker) && isPresent(icon)) {
-      marker.setIcon(icon);
+    if (isPresent(icon)) {
+      this.feature.setIcon(icon);
     }
   },
 
-  zIndexChanged: observer('zIndex', function() {
-    run.once(this, 'setZIndex');
-  }),
+  // setZIndex() {
+  //   const marker = this.get('marker');
+  //   const zIndex = this.get('zIndex');
+  //   if (isPresent(marker) && isPresent(zIndex)) {
+  //     marker.setZIndex(zIndex);
+  //   }
+  // },
 
-  setZIndex() {
-    const marker = get(this, 'marker');
-    const zIndex = get(this, 'zIndex');
-    if (isPresent(marker) && isPresent(zIndex)) {
-      marker.setZIndex(zIndex);
-    }
-  },
+  // draggableChanged: observer('draggable', function() {
+  //   run.once(this, 'setDraggable');
+  // }),
 
-  draggableChanged: observer('draggable', function() {
-    run.once(this, 'setDraggable');
-  }),
+  // setDraggable() {
+  //   const marker = this.get('marker');
+  //   const draggable = this.get('draggable');
+  //   if (isPresent(marker) && isPresent(draggable)) {
+  //     marker.setDraggable(draggable);
+  //   }
+  // },
 
-  setDraggable() {
-    const marker = get(this, 'marker');
-    const draggable = get(this, 'draggable');
-    if (isPresent(marker) && isPresent(draggable)) {
-      marker.setDraggable(draggable);
-    }
-  },
+  // setOnClick() {
+  //   const marker = this.get('marker');
+  //   if (isPresent(marker)) {
+  //     marker.addListener('click', () => this.sendOnClick());
+  //   }
+  // },
 
-  setOnClick() {
-    const marker = get(this, 'marker');
-    if (isPresent(marker)) {
-      marker.addListener('click', () => this.sendOnClick());
-    }
-  },
-
-  setOnDrag() {
-    const marker = get(this, 'marker');
-    marker.addListener('dragend', (event) => {
-      const lat = event.latLng.lat();
-      const lng = event.latLng.lng();
-      if (isPresent(lat) && isPresent(lng) && isPresent(marker)) {
-        const position = new google.maps.LatLng(lat, lng);
-        marker.setPosition(position);
-        this.sendOnDrag(lat, lng);
-      }
-    });
-  },
-
-  labelChanged: observer('label', function() {
-    run.once(this, 'setLabel');
-  }),
+  // setOnDrag() {
+  //   const marker = this.get('marker');
+  //   marker.addListener('dragend', (event) => {
+  //     const lat = event.latLng.lat();
+  //     const lng = event.latLng.lng();
+  //     if (isPresent(lat) && isPresent(lng) && isPresent(marker)) {
+  //       const position = new google.maps.LatLng(lat, lng);
+  //       marker.setPosition(position);
+  //       this.sendOnDrag(lat, lng);
+  //     }
+  //   });
+  // },
 
   setLabel() {
-    const marker = get(this, 'marker');
-    const label = get(this, 'label');
+    const label = this.get('label');
 
-    if (isPresent(marker) && isPresent(label)) {
-      marker.setLabel(label);
-      console.log(marker)
+    if (isPresent(label)) {
+      this.feature.setLabel(label);
     }
   },
-
-  titleChanged: observer('title', function() {
-    run.once(this, 'setTitle');
-  }),
 
   setTitle() {
-    const marker = get(this, 'marker');
-    const title = get(this, 'title');
+    const title = this.get('title');
 
-    if (isPresent(marker) && isPresent(title)) {
-      marker.setTitle(title);
+    if (isPresent(title)) {
+      this.feature.setTitle(title);
     }
   },
 
-  sendOnClick() {
-    const { onClick } = this.attrs;
-    const mapContext = get(this, 'gMap.map');
-    const group = get(this, 'group');
-    if (typeOf(onClick) === 'function') {
-      onClick();
-    } else {
-      this.sendAction('onClick');
-    }
-
-    if (isPresent(group)) {
-      mapContext.groupMarkerClicked(this, group);
-    }
-  },
-
-  sendOnDrag(lat, lng) {
-    const { onDrag } = this.attrs;
-
-    if (typeOf(onDrag) === 'function') {
-      onDrag(lat, lng);
-    } else {
-      this.sendAction('onDrag', lat, lng);
-    }
-  },
-
-  closeInfowindow() {
-    const infowindow = get(this, 'infowindow');
-    if (isPresent(infowindow)) {
-      infowindow.close();
+  setAnimation() {
+    const animation = this.get('animation');
+    if(isPresent(animation)) {
+      if (animation.toUpperCase() == 'DROP') {
+        this.feature.setAnimation(google.maps.Animation.DROP);
+      } else if (animation.toUpperCase() == 'BOUNCE') {
+        this.feature.setAnimation(google.maps.Animation.BOUNCE);
+      } else {
+        // Assert something
+      }
     }
   }
 });
-
-GMapMarkerComponent.reopenClass({
-  positionalParams: ['mapContext']
-});
-
-export default GMapMarkerComponent;

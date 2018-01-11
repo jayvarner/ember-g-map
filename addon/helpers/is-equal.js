@@ -1,7 +1,10 @@
-// I totally stole this from ember-select-light
-// https://github.com/q2ebanking/ember-select-light
-import Ember from 'ember';
+// I totally stole this from ember-truth-helpers
+import { helper } from '@ember/component/helper';
+import { isEqual as emberIsEqual } from '@ember/utils';
 
-export const isEqual = ([left, right]) => left === right;
+export function isEqual([a, b]) {
+  // console.log(emberIsEqual(a, b))
+  return emberIsEqual(a, b);
+}
 
-export default Ember.Helper.helper(isEqual);
+export default helper(isEqual);

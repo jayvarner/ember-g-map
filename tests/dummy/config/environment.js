@@ -55,12 +55,17 @@ module.exports = function(environment) {
     ENV.APP.LOG_ACTIVE_GENERATION = false;
     ENV.APP.LOG_VIEW_LOOKUPS = false;
 
+
+
     ENV.APP.rootElement = '#ember-testing';
   }
 
   if (environment === 'production') {
+    ENV.locationType = 'hash';
+    ENV.rootURL = '/ember-g-map/';
     ENV.rootURL = '/ember-g-map';
   }
+
 
   return ENV;
 };
