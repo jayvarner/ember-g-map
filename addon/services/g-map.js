@@ -1,3 +1,4 @@
+import { reads } from '@ember/object/computed';
 import Service from '@ember/service';
 import { computed, get, set } from '@ember/object';
 import { isPresent } from '@ember/utils';
@@ -6,7 +7,7 @@ import { inject as service } from '@ember/service';
 
 export default Service.extend({
   fastboot: service(),
-  isFastBoot: computed.reads('fastboot.isFastBoot'),
+  isFastBoot: reads('fastboot.isFastBoot'),
 
   clientLat: null,
   clientLng: null,

@@ -1,3 +1,4 @@
+import { reads } from '@ember/object/computed';
 import Component from '@ember/component';
 import { assert } from '@ember/debug';
 import { computed, get, set } from '@ember/object';
@@ -9,8 +10,9 @@ export default Component.extend(ChildMixin, {
   layout,
   tagName: '',
   fastboot: service(),
-  isFastBoot: computed.reads('fastboot.isFastBoot'),
+  isFastBoot: reads('fastboot.isFastBoot'),
   map: null,
+  feature: null,
 
   createFeature() {
     assert('GMapBase\'s `createFeature` should be overriden.');
@@ -25,7 +27,6 @@ export default Component.extend(ChildMixin, {
     }
 
     set(this, 'feature', this.createFeature());
-    // console.log
     // this._addObservers();
     // this._addEventListeners();
     if (this.get('parentComponent')) {

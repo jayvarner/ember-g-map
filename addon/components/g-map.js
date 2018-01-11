@@ -1,3 +1,4 @@
+import { reads } from '@ember/object/computed';
 import { A } from '@ember/array';
 import GMapBase from 'ember-g-map/components/g-map-base';
 import { computed, get, set } from '@ember/object';
@@ -13,7 +14,7 @@ export default GMapBase.extend(ParentMixin, {
   bounds: null,
   features: A(),
   fastboot: service(),
-  isFastBoot: computed.reads('fastboot.isFastBoot'),
+  isFastBoot: reads('fastboot.isFastBoot'),
 
   init() {
     this._super(...arguments);
@@ -37,12 +38,16 @@ export default GMapBase.extend(ParentMixin, {
 
   },
 
-  willDestroy() {
+  willDestroyParent() {
     if (this.get('isFastBoot')) {
       return;
     }
 
     set(this, 'feature', new google.maps.Map(this.element, {}));
     google.maps.event.clearInstanceListeners(this.element);
+  },
+
+  willDestroy() {
+    //
   }
 });

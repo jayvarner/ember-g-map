@@ -1,25 +1,28 @@
-<div class="row card">
-  <div class="col">
-    {{#link-to 'index'}}
-      Getting Started
-    {{/link-to}}
+<h1>Ember YAG-GMap</h1>
+<div uk-grid>
+  <div class='uk-width-1-5@m'>
+    <ul class='uk-nav'>
+        <li>
+          {{#link-to 'index'}}
+              Getting Started
+            {{/link-to}}
+        </li>
+          {{#link-to 'marker'}}
+            Marker
+          {{/link-to}}
+        <li>
+          {{#link-to 'directions'}}
+            Directions
+          {{/link-to}}
+        </li>
+        <li>
+          {{#link-to 'client-location'}}
+            Client Location
+          {{/link-to}}
+        </li>
+    </ul>
   </div>
-  <div class="col">
-    {{#link-to 'marker'}}
-      Marker
-    {{/link-to}}
-  </div>
-  <div class="col">
-    {{#link-to 'directions'}}
-      Directions
-    {{/link-to}}
-  </div>
-  <div class="col">
-    {{#link-to 'client-location'}}
-      Client Location
-    {{/link-to}}
+  <div class='uk-width-expand@m'>
+    {{outlet}}
   </div>
 </div>
-
-<div class='row'>{{outlet}}</div>
-

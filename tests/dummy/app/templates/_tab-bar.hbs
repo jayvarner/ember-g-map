@@ -1,0 +1,21 @@
+{{#tabs.tablist as |tablist|}}
+  <nav role='presentation' class='row'>
+    <div class='4 col'>
+      {{#tablist.tab 'result' on-select=(action (mut selection))}}
+        Result
+      {{/tablist.tab}}
+    </div>
+
+    <div class='4 col'>
+      {{#tablist.tab 'js' on-select=(action (mut selection))}}
+        Javascript
+      {{/tablist.tab}}
+    </div>
+
+    <div class='4 col'>
+      {{#tablist.tab 'hbs' on-select=(action (mut selection))}}
+        Template
+      {{/tablist.tab}}
+    </div>
+  </nav>
+{{/tabs.tablist}}

@@ -12,8 +12,6 @@ export default GMapBase.extend(RenderBlockMixin, {
       return;
     }
 
-    console.log(get(this, 'element'))
-
     let infowindow = new google.maps.InfoWindow({
       content: get(this, 'element')
     });

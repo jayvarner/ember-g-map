@@ -1,12 +1,34 @@
-{{#if gMap.clientLat}}
-{{!-- BEGIN-SNIPPET location --}}
-{{#g-map as |features|}}
-  {{features.marker position=(
-    hash
-      lat=gMap.clientLat
-      lng=gMap.clientLng
-  )}}
-{{/g-map}}
-{{!-- END-SNIPPET --}}
-{{code-snippet name='location.hbs'}}
-{{/if}}
+{{#uk-switcher animation='uk-animation-fade' as |switcher|}}
+  {{#switcher.nav type='tab' as |nav|}}
+    {{! nav.component is either a uk-tab or a uk-subnav component }}
+    {{#nav.component as |tab|}}
+      {{#tab.item}}Result{{/tab.item}}
+      {{#tab.item}}Javascript{{/tab.item}}
+      {{#tab.item}}Template{{/tab.item}}
+    {{/nav.component}}
+  {{/switcher.nav}}
+
+  {{#switcher.content as |content|}}
+    {{#content.item}}
+    {{#if gMap.clientLat}}
+    {{!-- BEGIN-SNIPPET location --}}
+    {{#g-map as |features|}}
+      {{features.marker position=(
+        hash
+          lat=gMap.clientLat
+          lng=gMap.clientLng
+      )}}
+    {{/g-map}}
+    {{!-- END-SNIPPET --}}
+    {{/if}}
+    {{/content.item}}
+
+    {{#content.item}}
+      <h5>Content 2</h5>
+    {{/content.item}}
+
+    {{#content.item}}
+      {{code-snippet name='location.hbs'}}
+    {{/content.item}}
+  {{/switcher.content}}
+{{/uk-switcher}}

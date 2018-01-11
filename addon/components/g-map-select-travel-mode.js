@@ -1,10 +1,14 @@
 import Component from '@ember/component';
-import { get } from '@ember/object';
+import { set } from '@ember/object';
 import layout from '../templates/components/g-map-select-travel-mode';
+import { inject as service } from '@ember/service';
+import { reads } from '@ember/object/computed';
 import { A } from '@ember/array';
 
 export default Component.extend({
   layout,
+  fastboot: service(),
+  isFastBoot: reads('fastboot.isFastBoot'),
   defaultModes: A([
     'DRIVING',
     'BICYCLING',
@@ -13,6 +17,6 @@ export default Component.extend({
   ]),
 
   change(event) {
-    get(this, 'gMap').setTravelMode(event.target.value);
+    set(this, 'travelMode', event.target.value);
   }
 });

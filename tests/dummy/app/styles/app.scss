@@ -1,0 +1,22 @@
+@import 'ember-uikit';
+
+.map-map {
+  height: 53vh;
+  width: 100%;
+}
+
+a {
+  &.active {
+    background: darkorange;
+    color: white;
+    padding-bottom: .5em;
+    padding-right: .5em;
+    padding-top: .5em;
+  }
+}
+
+.uk-switcher > :not(.uk-active) {
+  display: block;
+  height: 0;
+  visibility: hidden;
+}
