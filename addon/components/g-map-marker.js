@@ -1,13 +1,15 @@
 import GMapBase from 'ember-g-map/components/g-map-base';
 import { get, set } from '@ember/object';
-import { assert } from '@ember/debug';
-import { typeOf, isPresent, isEmpty } from '@ember/utils';
+// import {` assert } from '@ember/debug';
+import { isPresent } from '@ember/utils';
 import { ParentMixin, ChildMixin } from 'ember-composability-tools';
+import { inject as service } from '@ember/service';
 import layout from '../templates/components/g-map-overlayable';
 /* global google */
 
 export default GMapBase.extend(ParentMixin, ChildMixin, {
   layout,
+  gMap: service(),
   createFeature() {
     if (this.get('isFastBoot')) {
       return;
