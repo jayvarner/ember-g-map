@@ -1,7 +1,7 @@
 import { reads } from '@ember/object/computed';
 import { A } from '@ember/array';
 import GMapBase from 'ember-g-map/components/g-map-base';
-import { computed, get, set } from '@ember/object';
+import { get, set } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { ParentMixin } from 'ember-composability-tools';
 import layout from '../templates/components/g-map';

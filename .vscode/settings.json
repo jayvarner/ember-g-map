@@ -10,6 +10,7 @@
     "libpeerconnection.log": "explorerExcludedFiles",
     "npm-debug.log*": "explorerExcludedFiles",
     "testem.log": "explorerExcludedFiles",
-    ".idea": "explorerExcludedFiles"
+    ".idea": "explorerExcludedFiles",
+    ".DS_Store": "explorerExcludedFiles"
   }
 }

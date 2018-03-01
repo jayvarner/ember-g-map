@@ -11,14 +11,14 @@
   {{#switcher.content as |content|}}
     {{#content.item}}
     Select Travel Moded: {{g-map-select-travel-mode travelMode=travelMode}}
-    {{#if gMap.clientLat}}
+    {{#if geoLocation.clientLat}}
     {{!-- BEGIN-SNIPPET directions --}}
     {{#g-map as |feature|}}
       {{feature.directions
         origin=(
           hash
-            lat=gMap.clientLat
-            lng=gMap.clientLng
+            lat=geoLocation.clientLat
+            lng=geoLocation.clientLng
         )
         destination=(
           hash

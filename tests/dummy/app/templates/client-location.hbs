@@ -10,13 +10,13 @@
 
   {{#switcher.content as |content|}}
     {{#content.item}}
-    {{#if gMap.clientLat}}
+    {{#if geoLocation.clientLat}}
     {{!-- BEGIN-SNIPPET location --}}
     {{#g-map as |features|}}
       {{features.marker position=(
         hash
-          lat=gMap.clientLat
-          lng=gMap.clientLng
+          lat=geoLocation.clientLat
+          lng=geoLocation.clientLng
       )}}
     {{/g-map}}
     {{!-- END-SNIPPET --}}

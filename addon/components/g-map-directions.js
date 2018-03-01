@@ -1,6 +1,5 @@
 import GMapBase from 'ember-g-map/components/g-map-base';
-// import { RenderBlockMixin } from 'ember-composability-tools';
-import { get, observer, set } from '@ember/object';
+import { get, set } from '@ember/object';
 /* global google */
 
 export default GMapBase.extend({
@@ -35,12 +34,12 @@ export default GMapBase.extend({
 
   },
 
-  currentTravelMode: observer('travelMode', function() {
+  didUpdateAttrs() {
     this.feature.setMap(null);
     this.feature.setPanel(null);
     this.createFeature();
     return get(this, 'travelMode');
-  }),
+  },
 
   updateRoute() {
     // console.log(get(this, 'travelMode'));

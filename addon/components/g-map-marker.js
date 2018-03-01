@@ -9,7 +9,7 @@ import layout from '../templates/components/g-map-overlayable';
 
 export default GMapBase.extend(ParentMixin, ChildMixin, {
   layout,
-  gMap: service(),
+  geoLocation: service(),
   createFeature() {
     if (this.get('isFastBoot')) {
       return;
