@@ -1,7 +1,7 @@
 import { reads } from '@ember/object/computed';
 import Component from '@ember/component';
 import { assert } from '@ember/debug';
-import { computed, get, set } from '@ember/object';
+import { get, set } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { ChildMixin } from 'ember-composability-tools';
 import layout from '../templates/components/g-map-base';
@@ -50,6 +50,7 @@ export default Component.extend(ChildMixin, {
   },
 
   addToContainer() {
+    // console.log('generic addToCont')
     // this.feature.setMap(this.get('parentComponent')._feature);
   },
 

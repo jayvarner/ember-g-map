@@ -10,7 +10,6 @@
     {{/each}}
   {{else}}
     {{#each defaultModes as |mode|}}
-    {{log (is-equal mode travelMode)}}
       {{#if (is-equal mode travelMode 'selected')}}
         <option value={{mode}} selected>{{mode}}</option>
       {{else}}

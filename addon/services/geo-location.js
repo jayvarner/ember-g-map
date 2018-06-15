@@ -13,6 +13,15 @@ export default Service.extend({
   clientLng: null,
   clientPositionError: null,
 
+  init() {
+    this._super(...arguments);
+    if (this.get('isFastBoot')) {
+      return;
+    }
+
+    // if (get(this))
+  },
+
   clientPosition: computed('clientLat', 'clientLng', 'clientPositionError', function() {
     if (this.get('isFastBoot')) {
       return;
@@ -24,8 +33,7 @@ export default Service.extend({
     };
   }),
 
-  init() {
-    this._super(...arguments);
+  getClientPosition() {
     if (this.get('isFastBoot')) {
       return;
     }
@@ -36,7 +44,7 @@ export default Service.extend({
       }, (error) => {
         debug(`GMap Location ERROR: ${error.message}`);
         set(this, 'clientPositionError', error.message);
-      }, { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 });
+      }, { enableHighAccuracy: true, timeout: 50000, maximumAge: 0 });
     } else if (isPresent(navigator.geolocation) === false) {
       debug('GMap Location EROOR: Your browser doesn\'t support geolocation.');
       set(this, 'clientPositionError', 'GMap Location EROOR: Your browser doesn\'t support geolocation.');

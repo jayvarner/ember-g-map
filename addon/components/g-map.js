@@ -14,6 +14,7 @@ export default GMapBase.extend(ParentMixin, {
   bounds: null,
   features: A(),
   fastboot: service(),
+  yagMap: service(),
   isFastBoot: reads('fastboot.isFastBoot'),
 
   init() {
@@ -25,29 +26,39 @@ export default GMapBase.extend(ParentMixin, {
       return;
     }
 
-    const options = get(this, 'options');
-    const map = new google.maps.Map(this.element, options);
-    set(this, 'bounds', new google.maps.LatLngBounds());
-    if (options === null) {
-      map.fitBounds(get(this, 'bounds'));
+    let options = get(this, 'options') || {};
+    if (get(this, 'zoom') !== 'auto') {
+      options.zoom = parseInt(get(this, 'zoom')) || 16
     }
+
+    if (!options.center) {
+      set(this, 'bounds', new google.maps.LatLngBounds());
+    }
+
+    const map = new google.maps.Map(this.element, options);
+    google.maps.event.addListenerOnce(map, 'idle', () => {
+      if (Number.isInteger(options.zoom)) {
+        map.setZoom(options.zoom);
+      }
+    });
+    get(this, 'yagMap').setMap(map);
     return map;
-  },
-
-  didcreateFeature() {
-
   },
 
   willDestroyParent() {
     if (this.get('isFastBoot')) {
       return;
     }
+    let map = get(this, 'feature');
 
-    set(this, 'feature', new google.maps.Map(this.element, {}));
-    google.maps.event.clearInstanceListeners(this.element);
+    google.maps.event.clearInstanceListeners(map);
+    set(this, 'feature', null);
+    map = null;
+    this.element.remove();
+    // set(this, 'feature', new google.maps.Map(this.element, {}));
   },
 
   willDestroy() {
-    //
+    console.log('destroying map')
   }
 });

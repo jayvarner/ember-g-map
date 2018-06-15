@@ -1,4 +1,9 @@
-import Ember from 'ember';
+import Service from '@ember/service';
+import { set } from '@ember/object';
 
-export default Ember.Service.extend({
+export default Service.extend({
+  map: null,
+  setMap(map) {
+    set(this, 'map', map);
+  }
 });

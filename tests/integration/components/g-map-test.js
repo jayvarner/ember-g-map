@@ -1,41 +1,27 @@
-import { moduleForComponent, test } from 'ember-qunit';
+
+import { expect } from 'chai';
+import { describe, it } from 'mocha';
+import { setupComponentTest } from 'ember-mocha';
 import hbs from 'htmlbars-inline-precompile';
+import { find } from 'ember-native-dom-helpers';
 
-moduleForComponent('g-map', 'Integration | Component | g map', {
-  integration: true
+describe('Integration | Component | g map', function() {
+  setupComponentTest('g-map', {
+    integration: true
+  });
+
+  it('renders map', function() {
+
+    this.render(hbs`
+    {{g-map
+      lat=33.75432
+      lng=-84.38979
+      zoom=12
+    }}
+    `);
+
+    expect(find('.map-map')).to.be.ok;
+    expect('12').to.equal('12')
+    // assert.equal(this.get('markers.length', 4));
+  });
 });
-
-test('it renders', function(assert) {
-  // assert.expect(2);
-
-  // Set any properties with this.set('myProperty', 'value');
-  // Handle any actions with this.on('myAction', function(val) { ... });
-
-  // this.render(hbs`{{g-map}}`);
-
-  // assert.ok(this.$());
-
-  // Template block usage:
-  this.render(hbs`
-  {{g-map
-C
-  }}
-  `);
-
-  assert.ok(this.$());
-});
-
-// test('it includes list of child markers', function(assert) {
-//   assert.expect(1);
-
-//   this.render(hbs`
-//     {{#g-map as |context|}}
-//       {{g-map-marker context}}
-//       {{g-map-marker context}}
-//       {{g-map-marker context}}
-//       {{g-map-marker context}}
-//     {{/g-map}}
-//   `);
-
-//   assert.equal(this.get('markers.length', 4));
-// });

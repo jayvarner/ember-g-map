@@ -1,7 +1,7 @@
 import GMapBase from 'ember-g-map/components/g-map-base';
 import { get, set } from '@ember/object';
 // import {` assert } from '@ember/debug';
-import { isPresent } from '@ember/utils';
+import { isPresent, typeOf } from '@ember/utils';
 import { ParentMixin, ChildMixin } from 'ember-composability-tools';
 import { inject as service } from '@ember/service';
 import layout from '../templates/components/g-map-overlayable';
@@ -9,6 +9,7 @@ import layout from '../templates/components/g-map-overlayable';
 
 export default GMapBase.extend(ParentMixin, ChildMixin, {
   layout,
+  tagName: '',
   geoLocation: service(),
   createFeature() {
     if (this.get('isFastBoot')) {
@@ -18,30 +19,57 @@ export default GMapBase.extend(ParentMixin, ChildMixin, {
     return new google.maps.Marker();
   },
 
-  didcreateFeature() {
+  didInsertParent() {
+    // Check for fastBoot
+    if (this.get('isFastBoot')) {
+      return;
+    }
 
+    set(this, 'feature', this.createFeature());
+    this.addToContainer();
+
+    // this._addObservers();
+    // this._addEventListeners();
+
+  },
+
+  didcreateFeature() {
+    // let bounds = get(this, 'parentComponent.bounds');
+    // console.log(this.feature.getPosition());
+    // if (bounds) {
+    //   bounds.extend(this.feature.getPosition());
+    //   map.fitBounds(bounds);
+    // }
+  },
+
+  didReceiveAttrs() {
+    this.setPosition();
+
+    // if (this.get('parentComponent')) {
+    this.addToContainer();
+    // }
   },
 
   addToContainer() {
     if (this.get('isFastBoot')) {
       return;
     }
+
+    this.didcreateFeature();
     if(isPresent(this.feature)) {
       this.setPosition();
       // this.setZIndex();
       this.setIcon();
-      // this.setDraggable();
+      this.setDraggable();
       this.setLabel();
       this.setTitle();
       this.setAnimation();
       // this.setOnClick();
-      // this.setOnDrag();
+      this.setOnDrag();
+
       let map = get(this, 'parentComponent').feature;
       set(this, 'map', map);
-      let bounds = get(this, 'parentComponent').bounds;
       get(this, 'feature').setMap(map);
-      bounds.extend(get(this, 'feature.position'));
-      map.fitBounds(bounds);
     }
   },
 
@@ -54,20 +82,35 @@ export default GMapBase.extend(ParentMixin, ChildMixin, {
   },
 
   setPosition() {
+    if (this.get('isFastBoot')) {
+      return;
+    }
+
     const marker = this.feature;
     const latLng = get(this, 'position')
-    const lat = get(this, 'lat');
-    const lng = get(this, 'lng');
+    const lat = parseFloat(get(this, 'lat'));
+    const lng = parseFloat(get(this, 'lng'));
 
-    const markerPosition = isPresent(latLng) ? latLng : new google.maps.LatLng(lat, lng);
+    const markerPosition = isPresent(latLng) ? latLng : new google.maps.LatLng(parseFloat(lat), parseFloat(lng));
 
     if (isPresent(marker)
       && isPresent(markerPosition)) {
+      const map = get(this, 'parentComponent.feature');
       marker.setPosition(markerPosition);
+      let bounds = get(this, 'parentComponent.bounds');
+      if (bounds) {
+        bounds.extend(this.feature.getPosition());
+        console.log(bounds)
+        map.fitBounds(bounds);
+      }
     }
   },
 
   setIcon() {
+    if (this.get('isFastBoot')) {
+      return;
+    }
+
     const icon = this.get('icon');
 
     if (isPresent(icon)) {
@@ -87,13 +130,12 @@ export default GMapBase.extend(ParentMixin, ChildMixin, {
   //   run.once(this, 'setDraggable');
   // }),
 
-  // setDraggable() {
-  //   const marker = this.get('marker');
-  //   const draggable = this.get('draggable');
-  //   if (isPresent(marker) && isPresent(draggable)) {
-  //     marker.setDraggable(draggable);
-  //   }
-  // },
+  setDraggable() {
+    const draggable = this.get('draggable');
+    if (isPresent(this.feature) && isPresent(draggable)) {
+      this.feature.setDraggable(draggable);
+    }
+  },
 
   // setOnClick() {
   //   const marker = this.get('marker');
@@ -102,18 +144,17 @@ export default GMapBase.extend(ParentMixin, ChildMixin, {
   //   }
   // },
 
-  // setOnDrag() {
-  //   const marker = this.get('marker');
-  //   marker.addListener('dragend', (event) => {
-  //     const lat = event.latLng.lat();
-  //     const lng = event.latLng.lng();
-  //     if (isPresent(lat) && isPresent(lng) && isPresent(marker)) {
-  //       const position = new google.maps.LatLng(lat, lng);
-  //       marker.setPosition(position);
-  //       this.sendOnDrag(lat, lng);
-  //     }
-  //   });
-  // },
+  setOnDrag() {
+    this.feature.addListener('dragend', (event) => {
+      const lat = event.latLng.lat();
+      const lng = event.latLng.lng();
+      if (isPresent(lat) && isPresent(lng) && isPresent(this.feature)) {
+        const position = new google.maps.LatLng(lat, lng);
+        this.feature.setPosition(position);
+        this.sendOnDrag(lat, lng);
+      }
+    });
+  },
 
   setLabel() {
     const label = this.get('label');
@@ -141,6 +182,16 @@ export default GMapBase.extend(ParentMixin, ChildMixin, {
       } else {
         // Assert something
       }
+    }
+  },
+
+  sendOnDrag(lat, lng) {
+    const onDrag = get(this, 'onDrag');
+
+    if (typeOf(onDrag) === 'function') {
+      onDrag(lat, lng);
+    } else {
+      this.sendAction('onDrag', lat, lng);
     }
   }
 });

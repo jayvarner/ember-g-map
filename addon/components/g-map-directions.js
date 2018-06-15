@@ -10,19 +10,22 @@ export default GMapBase.extend({
 
     let directionsService = new google.maps.DirectionsService;
     let directionsDisplay = new google.maps.DirectionsRenderer;
-    let origin = get(this, 'origin');
-    let destination = get(this, 'destination');
-    let travelMode = get(this, 'travelMode') || 'WALKING';
+
+    let route = {
+      origin: { lat: get(this, 'origin_lat'), lng: get(this, 'origin_lng') },
+      destination: { lat: get(this, 'destination_lat'), lng: get(this, 'destination_lng') },
+      travelMode: get(this, 'travelMode') || 'WALKING'
+    }
+
+    if (get(this, 'waypoint_lat') && get(this, 'waypoint_lng') && get(this, 'travelMode') === 'DRIVING') {
+      route['waypoints'] = [ { location: { lat: get(this, 'waypoint_lat'), lng: get(this, 'waypoint_lng') }, stopover: true } ];
+    }
     let map = get(this, 'parentComponent').feature;
     set(this, 'feature', directionsDisplay);
     directionsDisplay.setMap(map);
     directionsDisplay.setPanel(document.getElementById('directions-panel'));
 
-    directionsService.route({
-      origin,
-      destination,
-      travelMode
-    }, (response, status) => {
+    directionsService.route(route, (response, status) => {
       if (status === 'OK') {
         directionsDisplay.setDirections(response);
       } else {
