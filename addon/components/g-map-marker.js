@@ -64,7 +64,7 @@ export default GMapBase.extend(ParentMixin, ChildMixin, {
       this.setLabel();
       this.setTitle();
       this.setAnimation();
-      // this.setOnClick();
+      this.setOnClick();
       this.setOnDrag();
 
       let map = get(this, 'parentComponent').feature;
@@ -100,7 +100,6 @@ export default GMapBase.extend(ParentMixin, ChildMixin, {
       let bounds = get(this, 'parentComponent.bounds');
       if (bounds) {
         bounds.extend(this.feature.getPosition());
-        console.log(bounds)
         map.fitBounds(bounds);
       }
     }
@@ -137,12 +136,12 @@ export default GMapBase.extend(ParentMixin, ChildMixin, {
     }
   },
 
-  // setOnClick() {
-  //   const marker = this.get('marker');
-  //   if (isPresent(marker)) {
-  //     marker.addListener('click', () => this.sendOnClick());
-  //   }
-  // },
+  setOnClick() {
+    const marker = this.get('feature');
+    if (isPresent(marker)) {
+      marker.addListener('click', () => this.sendOnClick());
+    }
+  },
 
   setOnDrag() {
     this.feature.addListener('dragend', (event) => {
@@ -182,6 +181,23 @@ export default GMapBase.extend(ParentMixin, ChildMixin, {
       } else {
         // Assert something
       }
+    }
+  },
+
+  sendOnClick() {
+    console.log(this.get('onClick'))
+    const onClick = this.get('onClick');
+    const mapContext = this.get('mapContext');
+    const group = this.get('group');
+
+    if (typeOf(onClick) === 'function') {
+      onClick();
+    } else {
+      this.sendAction('onClick');
+    }
+
+    if (isPresent(group)) {
+      mapContext.groupMarkerClicked(this, group);
     }
   },
 

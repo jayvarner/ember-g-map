@@ -31,7 +31,6 @@
     "ember-cli-eslint": "^4.2.1",
     "ember-cli-fastboot": "^1.1.1",
     "ember-cli-github-pages": "git://github.com/poetic/ember-cli-github-pages.git#master",
-    "ember-cli-htmlbars-inline-precompile": "^1.0.0",
     "ember-cli-inject-live-reload": "^1.4.1",
     "ember-cli-mocha": "^0.15.0",
     "ember-cli-release": "0.2.9",
@@ -68,6 +67,7 @@
     "bower": "^1.8.2",
     "ember-cli-babel": "^6.0.0",
     "ember-cli-htmlbars": "^2.0.1",
+    "ember-cli-htmlbars-inline-precompile": "^1.0.0",
     "ember-composability-tools": "^0.0.9",
     "ember-source": "^2.18.0",
     "global": "^4.3.2"

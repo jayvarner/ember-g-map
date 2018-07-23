@@ -1,1 +1,0 @@
-export { default } from 'ember-g-map/components/mode-icon';
